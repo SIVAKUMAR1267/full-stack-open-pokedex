@@ -23,8 +23,8 @@ jobs:
         run: npm test
 
       - name: e2etest
-        run: npm start
-        run: sleep 10
-        run: cd playwright
-        run: npm test
-        
+        run: |
+          npm start &
+          sleep 10
+          cd playwright
+          npm test
