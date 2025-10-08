@@ -70,10 +70,5 @@ export default defineConfig({
     // },
   ],
 
-  webServer: {
-    command: 'cd .. && npm run start',
-    url: 'http://localhost:8080',
-    reuseExistingServer: !process.env.CI,
-  },
 })
 
