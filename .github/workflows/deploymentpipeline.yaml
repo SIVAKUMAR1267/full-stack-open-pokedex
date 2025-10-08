@@ -24,5 +24,6 @@ jobs:
           npm start &
           sleep 10
           cd playwright
-          npm install
+          npm ci
+          npx playwright install --with-deps
           npm test
