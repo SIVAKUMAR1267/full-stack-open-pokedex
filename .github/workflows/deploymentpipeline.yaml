@@ -1,11 +1,9 @@
 name: Deployment pipeline
 
-# Map the repository variable (or workflow-level env) into env.CHECK_SKIP
-env:
-  CHECK_SKIP: ${{ vars.CHECK_SKIP }}
-
 on:
   push:
+    branches:
+      - main
   pull_request:
     branches: [main]
     types: [opened, synchronize]
@@ -14,58 +12,43 @@ jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
     steps:
-       - uses: actions/checkout@v4
-       - uses: actions/setup-node@v4
-         with:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
           node-version: '20'
-       - name: Install dependencies 
-         run: npm install --legacy-peer-deps 
+      - name: Install dependencies 
+        run: npm install --legacy-peer-deps 
 
-       - name: lint
-         run: npm run lint
+      - name: lint
+        run: npm run lint
 
-       - name: e2etest
-         run: |
+      - name: e2etest
+        run: |
           npm start &
           sleep 10
           cd playwright
           npm ci
           npx playwright install --with-deps
           npm test
-      
+
   tag_release:
     needs: [simple_deployment_pipeline]
-    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
     runs-on: ubuntu-latest
+    # Run only on push to main AND if commit messages do NOT contain #skip
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
-        if: ${{github.ref == 'refs/heads/main' && github.event_name == 'push'}}
         uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  check_skip:
+          DEFAULT_BUMP: patch
+
+  trigger_deployment:
+    needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
-    outputs:
-      skip_deploy: ${{ steps.check.outputs.skip-deploy }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Check commits for #skip
-        id: check
-        env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # scans last 50 commit messages, then checks merged PR commits via GitHub API if needed
-          ...
-          echo "skip-deploy=true" >> $GITHUB_OUTPUT   # or skip-deploy=false
-  Trigger deployment:
-    needs: [tag_release]
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && needs.check_skip.outputs.skip_deploy != 'true' }}
+    # Run only on push to main AND if commit messages do NOT contain #skip
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
       - name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-  
-    
