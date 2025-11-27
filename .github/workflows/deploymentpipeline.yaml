@@ -48,6 +48,8 @@ jobs:
     needs: [tag_release]
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && ${{ env.CHECK_SKIP }} != 'true' }}
-    run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+    steps:
+      - name: Trigger deployment
+        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
   
     
