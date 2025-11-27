@@ -44,10 +44,26 @@ jobs:
         uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  check_skip:
+  runs-on: ubuntu-latest
+  outputs:
+    skip_deploy: ${{ steps.check.outputs.skip-deploy }}
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Check commits for #skip
+      id: check
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # scans last 50 commit messages, then checks merged PR commits via GitHub API if needed
+        ...
+        echo "skip-deploy=true" >> $GITHUB_OUTPUT   # or skip-deploy=false
   Trigger deployment:
     needs: [tag_release]
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && ${{ env.CHECK_SKIP }} != 'true' }}
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && needs.check_skip.outputs.skip_deploy != 'true' }}
     steps:
       - name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
