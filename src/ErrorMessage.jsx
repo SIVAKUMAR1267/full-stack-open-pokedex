@@ -1,7 +1,7 @@
 import React from 'react'
 
-const ErroMessage = ({ error }) => (
+const ErrorMessage = ({ error }) => (
   <div data-testid="error">An error occured: {error.toString()}</div>
 )
 
-eport default ErrorMessage
+export default ErrorMessage
