@@ -3,7 +3,6 @@ name: Deployment pipeline
 on:
   push:
     branches:
-      - main
   pull_request:
     branches: [main]
     types: [opened, synchronize]
@@ -34,8 +33,7 @@ jobs:
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
-    # Run only on push to main AND if commit messages do NOT contain #skip
-    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
@@ -47,8 +45,7 @@ jobs:
   trigger_deployment:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
-    # Run only on push to main AND if commit messages do NOT contain #skip
-    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
       - name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
