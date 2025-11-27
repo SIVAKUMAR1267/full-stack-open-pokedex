@@ -43,7 +43,7 @@ jobs:
           DEFAULT_BUMP: patch
 
   trigger_deployment:
-    needs: [simple_deployment_pipeline]
+    needs: [tag_release]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
