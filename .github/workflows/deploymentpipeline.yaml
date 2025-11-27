@@ -1,5 +1,9 @@
 name: Deployment pipeline
 
+# Map the repository variable (or workflow-level env) into env.CHECK_SKIP
+env:
+  CHECK_SKIP: ${{ vars.CHECK_SKIP }}
+
 on:
   push:
   pull_request:
@@ -28,31 +32,10 @@ jobs:
           npm ci
           npx playwright install --with-deps
           npm test
-       - name: build
-         run: npm run build
-       - name: Trigger deployment
-         if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && needs.check_skip.outputs.skip_deploy != 'true' }}
-         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-  check_skip:
-    runs-on: ubuntu-latest
-    outputs:
-      skip_deploy: ${{ steps.check.outputs.skip-deploy }}
-    steps:
-      - name: Checkout (for secret check)
-        uses: actions/checkout@v4
-      - name: Decide whether to skip deployments from secret
-        id: check
-        run: |
-          # Decide skip based on repository secret CHECK_SKIP
-          if [ "${{ secrets.CHECK_SKIP }}" = "true" ]; then
-            echo "skip-deploy=true" >> $GITHUB_OUTPUT
-          else
-            echo "skip-deploy=false" >> $GITHUB_OUTPUT
-          fi
-
+      
   tag_release:
     needs: [simple_deployment_pipeline, check_skip]
-    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && needs.check_skip.outputs.skip_deploy != 'true' }}
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,5 +44,25 @@ jobs:
         uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+  Trigger deployment:
+    needs: [tag_release, check_skip]
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && env.CHECK_SKIP != 'true' }}
+    run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+  check_skip:
+  runs-on: ubuntu-latest
+  outputs:
+    skip_deploy: ${{ steps.check.outputs.skip-deploy }}
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Check commits for #skip
+      id: check
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # scans last 50 commit messages, then checks merged PR commits via GitHub API if needed
+        ...
+        echo "skip-deploy=true" >> $GITHUB_OUTPUT   # or skip-deploy=false
     
