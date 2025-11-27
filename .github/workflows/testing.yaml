@@ -1,6 +1,7 @@
 name: Testing stuff
 
 on:
+  secondary:
   push:
     
 

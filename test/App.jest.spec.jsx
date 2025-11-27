@@ -33,4 +33,3 @@ describe('<App />', () => {
   })
 
 })
-daeewrfa
