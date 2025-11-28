@@ -29,6 +29,19 @@ jobs:
           npm ci
           npx playwright install --with-deps
           npm test
+      
+      - name: sending discord notification for successful tests
+        if: ${{ success() }}
+        uses: rjstone/discord-webhook-notify@v2
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          username: siva's BOT
+          avatarUrl: https://www.flaticon.com/free-icon/man_6997674?term=avatar&page=1&position=26&origin=tag&related_id=6997674
+          text: |
+            ${{ github.event_name }} event detected on ${{ github.ref }} branch.
+            Repository: ${{ github.repository }}
+            Status: Tests Passed ✅
+
 
   tag_release:
     needs: [simple_deployment_pipeline]
@@ -49,3 +62,14 @@ jobs:
     steps:
       - name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+      - name: sending discord notification for deployment trigger
+        if: ${{ success() }}
+        uses: rjstone/discord-webhook-notify@v2
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          username: siva's BOT
+          avatarUrl: https://www.flaticon.com/free-icon/man_6997674?term=avatar&page=1&position=26&origin=tag&related_id=6997674
+          text: |
+            Deployment triggered for new tag on ${{ github.ref }} branch.
+            Repository: ${{ github.repository }}
+            Status: Deployment Triggered 🚀
