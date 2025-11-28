@@ -31,7 +31,7 @@ jobs:
           npm test
       
       - name: sending discord notification for successful tests
-        if: success()
+       
         uses: rjstone/discord-webhook-notify@v2.2.1
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
