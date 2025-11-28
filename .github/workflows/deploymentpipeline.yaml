@@ -31,7 +31,7 @@ jobs:
           npm test
       
       - name: sending discord notification for successful tests
-        if: ${{ success() }}
+        if: success()
         uses: rjstone/discord-webhook-notify@v2.2.1
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
@@ -63,8 +63,8 @@ jobs:
       - name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
       - name: sending discord notification for deployment trigger
-        if: ${{ success() }}
-        uses: rjstone/discord-webhook-notify@v2v2.2.1
+        if: success()
+        uses: rjstone/discord-webhook-notify@v2.2.1
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           username: siva's BOT
