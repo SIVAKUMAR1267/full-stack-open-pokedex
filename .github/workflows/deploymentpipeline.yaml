@@ -69,4 +69,3 @@ jobs:
             Deployment triggered for new tag on ${{ github.ref }} branch.
             Repository: ${{ github.repository }}
             Status: Deployment Triggered 🚀
-            
