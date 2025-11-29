@@ -41,7 +41,6 @@ jobs:
             Repository: ${{ github.repository }}
             Status: Tests Passed ✅
 
-
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
