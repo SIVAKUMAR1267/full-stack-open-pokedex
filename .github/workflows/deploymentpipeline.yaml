@@ -31,12 +31,10 @@ jobs:
           npm test
       
       - name: sending discord notification for successful tests
-       
         uses: rjstone/discord-webhook-notify@v2.2.1
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           username: siva's BOT
-          avatarUrl: https://www.flaticon.com/free-icon/man_6997674?term=avatar&page=1&position=26&origin=tag&related_id=6997674
           text: |
             ${{ github.event_name }} event detected on ${{ github.ref }} branch.
             Repository: ${{ github.repository }}
@@ -68,7 +66,6 @@ jobs:
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           username: siva's BOT
-          avatarUrl: https://www.flaticon.com/free-icon/man_6997674?term=avatar&page=1&position=26&origin=tag&related_id=6997674
           text: |
             Deployment triggered for new tag on ${{ github.ref }} branch.
             Repository: ${{ github.repository }}
