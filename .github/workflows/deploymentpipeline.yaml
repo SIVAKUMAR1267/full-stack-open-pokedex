@@ -30,16 +30,15 @@ jobs:
           npx playwright install --with-deps
           npm test
       
-      - name: sending discord notification for successful tests
-        if: ${{ success() }}
-        uses: rjstone/discord-webhook-notify@v2.2.1
+      
+      - name: Test Success
+        uses: rjstone/discord-webhook-notify@v2
+        if: success()
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          username: siva's BOT
-          text: |
-            ${{ github.event_name }} event detected on ${{ github.ref }} branch.
-            Repository: ${{ github.repository }}
-            Status: Tests Passed ✅
+          severity: info
+          details: All tests passed!
+
 
 
   tag_release:
