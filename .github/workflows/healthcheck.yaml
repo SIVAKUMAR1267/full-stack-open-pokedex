@@ -3,6 +3,12 @@ name: healthchecker
 on:
   schedule:
     - cron: '0 */5 * * *'
+  push:
+    branches:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
 
 jobs:
   health_check:
