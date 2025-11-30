@@ -33,7 +33,7 @@ jobs:
       
       - name: Send Discord notification
         if: ${{ success() }}
-        uses: stegzilla/discord-notify@v2
+        uses: stegzilla/discord-notify@e9ae7f7d5d45da6be819165c3ccf78357e12bdf6
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           title: "ALL CHECKS PASSED"
@@ -43,7 +43,7 @@ jobs:
           username: GitHub Notifier
       - name: Send Discord failure notification
         if: ${{ failure() }}
-        uses: stegzilla/discord-notify@v2
+        uses: stegzilla/discord-notify@e9ae7f7d5d45da6be819165c3ccf78357e12bdf6
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           title: "CHECKS FAILED"
@@ -76,7 +76,7 @@ jobs:
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
       - name: Send Discord notification
         if: ${{ success() }}
-        uses: stegzilla/discord-notify@v2
+        uses: stegzilla/discord-notify@e9ae7f7d5d45da6be819165c3ccf78357e12bdf6
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           title: "Deployment Triggered"
@@ -86,7 +86,7 @@ jobs:
           username: GitHub Notifier
       - name: Send Discord failure notification
         if: ${{ failure() }}
-        uses: stegzilla/discord-notify@v2
+        uses: stegzilla/discord-notify@e9ae7f7d5d45da6be819165c3ccf78357e12bdf6
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           title: "Deployment Trigger Failed"
