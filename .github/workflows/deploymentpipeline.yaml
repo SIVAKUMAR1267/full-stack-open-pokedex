@@ -60,13 +60,13 @@ jobs:
     steps:
       - name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-      - name: sending discord notification for deployment trigger
-        uses: rjstone/discord-webhook-notify@v2.2.1
+      - name: Send Discord notification
+        uses: stegzilla/discord-notify@v2
         with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          username: siva's BOT
-          text: |
-            Deployment triggered for new tag on ${{ github.ref }} branch.
-            Repository: ${{ github.repository }}
-            Status: Deployment Triggered 🚀
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Deployment Triggered"
+          message: "A new deployment has been triggered for the service."
+          include_image: true
+          avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          username: GitHub Notifier
             
